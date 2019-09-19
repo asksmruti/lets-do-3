@@ -1,0 +1,24 @@
+service: s3-trigger-copy
+provider:
+  name: aws
+  runtime: python3.7
+  region: eu-central-1
+  iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "s3:*"
+        Resource:
+          - { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+          - { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" }, "/*" ] ]  }
+          - { "Fn::Join" : ["", ["arn:aws:s3:::dp-demo" ] ]  }
+          - { "Fn::Join" : ["", ["arn:aws:s3:::dp-demo", "/*" ] ]  }
+          - { "Fn::Join" : ["", ["arn:aws:s3:::dp-demo-1" ] ]  }
+          - { "Fn::Join" : ["", ["arn:aws:s3:::dp-demo-1", "/*" ] ]  }
+functions:
+  s3_trigger:
+    handler: handler.lambda_handler
+    events:
+      - s3:
+         bucket: dp-demo
+         event: s3:ObjectCreated:*
+         existing: true
